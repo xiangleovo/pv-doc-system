@@ -132,7 +132,7 @@ Page({
     }
 
     // 强制转换为 HTTPS（微信小程序只允许 HTTPS 请求）
-    const safeUrl = pdfUrl.replace(/^http:\/\//i, 'https://')
+    const safeUrl = pdfUrl.replace(/^http:/i, 'https:')
 
     showLoading('文档加载中...')
 

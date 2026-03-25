@@ -45,7 +45,7 @@ const adminLogin = async (req, res) => {
     const token = jwt.sign(
       { userId: user.id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '12h' }  // 缩短过期时间提高安全性
     );
 
     res.json({
@@ -162,11 +162,11 @@ const wxLogin = async (req, res) => {
     // 4. 更新最后登录时间
     await user.update({ lastLoginAt: new Date() });
 
-    // 5. 生成 JWT token
+    // 5. 生成 JWT token（7天过期，平衡安全性和用户体验）
     const token = jwt.sign(
       { userId: user.id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '30d' }
+      { expiresIn: '7d' }
     );
 
     res.json({

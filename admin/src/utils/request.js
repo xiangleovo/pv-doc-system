@@ -9,8 +9,6 @@ const request = axios.create({
   timeout: 30000
 })
 
-console.log('API baseURL:', baseURL) // 开发调试用，生产环境可移除
-
 // 请求拦截器
 request.interceptors.request.use(
   config => {
@@ -38,8 +36,6 @@ request.interceptors.response.use(
     }
   },
   error => {
-    console.error('请求错误:', error)
-
     if (error.response) {
       switch (error.response.status) {
         case 401:
