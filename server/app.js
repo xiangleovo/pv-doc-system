@@ -33,7 +33,7 @@ app.use(helmet({
 // 限流配置
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 分钟窗口
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // 生产环境 100 请求/15分钟，开发环境 1000
+  max: process.env.NODE_ENV === 'production' ? 100 : 10000, // 生产环境 100 请求/15分钟，开发环境 10000
   message: { success: false, message: '请求过于频繁，请稍后再试' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -44,7 +44,7 @@ const limiter = rateLimit({
 // 更严格的限流：登录接口（防暴力破解）
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5, // 15 分钟内最多 5 次登录尝试
+  max: process.env.NODE_ENV === 'production' ? 5 : 100, // 生产环境 5 次，开发环境 100 次
   message: { success: false, message: '登录尝试次数过多，请15分钟后再试' },
   skipSuccessfulRequests: true // 成功的请求不计数
 });
