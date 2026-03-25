@@ -130,12 +130,8 @@ app.use((err, req, res, next) => {
 // 初始化数据库
 const initDatabase = async () => {
   try {
-    // 生产环境不自动修改表结构，开发环境使用 alter: true
-    const syncOptions = process.env.NODE_ENV === 'production' 
-      ? { force: false, alter: false }
-      : { force: false, alter: true };
-    
-    await sequelize.sync(syncOptions);
+    // 不自动修改表结构，使用 migrations 或手动迁移
+    await sequelize.sync({ force: false, alter: false });
     console.log('数据库同步成功');
 
     // 创建默认管理员账号
