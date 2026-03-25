@@ -1,0 +1,94 @@
+<view class="about-page">
+  <view class="logo-hero">
+    <view class="hero-decor-1"></view>
+    <view class="hero-decor-2"></view>
+    <view class="hero-content">
+      <view class="logo-wrap">
+        <image class="logo-img" src="/images/logo-zhonghao.png" mode="aspectFit"></image>
+      </view>
+      <text class="company-name">{{companyName}}</text>
+      <text class="company-en">ZHONGHAO ENERGY</text>
+    </view>
+  </view>
+  <view class="body-section">
+    <view class="section-card">
+      <view class="section-header">
+        <view class="section-icon-wrap">
+          <view class="svg-icon svg-info-circle" style="width:36rpx;height:36rpx;"></view>
+        </view>
+        <text class="section-title">公司简介</text>
+      </view>
+      <text class="section-desc">安徽中浩能源电力有限公司是安徽品能公司旗下的子公司，成立于2021年，主要经营国内一线品牌组件和逆变器的销售贸易。服务渠道遍及全国各地，合作商达到3000多家公司。</text>
+      <text class="section-desc" style="margin-top:16rpx;">公司坚持"依托安徽、辐射华北、华南、覆盖全国"的营销总思路，稳扎稳打，赢得了市场、赢得了客户，销售业绩逐年攀升。</text>
+      <text class="section-desc" style="margin-top:16rpx;">公司始终秉持客户至上、服务第一，专业专注、创新、合作共赢的经营理念，在市场中占据了领先地位，为中国"双碳"目标的实现赋能。</text>
+    </view>
+    <view class="section-card">
+      <view class="section-header">
+        <view class="section-icon-wrap green">
+          <view class="svg-icon svg-browse" style="width:36rpx;height:36rpx;"></view>
+        </view>
+        <text class="section-title">组件合作品牌</text>
+      </view>
+      <view class="brand-pill-list">
+        <view class="brand-pill" wx:for="{{panelBrands}}" wx:key="name">
+          <image
+            wx:if="{{item.logo}}"
+            class="brand-pill-img"
+            src="{{item.logo}}"
+            mode="aspectFit"
+            lazy-load
+          ></image>
+          <view class="brand-pill-placeholder" wx:else>
+            <text>{{item.initial}}</text>
+          </view>
+          <text class="brand-pill-text">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="section-card">
+      <view class="section-header">
+        <view class="section-icon-wrap orange">
+          <view class="svg-icon svg-browse" style="width:36rpx;height:36rpx;"></view>
+        </view>
+        <text class="section-title">逆变器合作品牌</text>
+      </view>
+      <view class="brand-pill-list">
+        <view class="brand-pill" wx:for="{{inverterBrands}}" wx:key="name">
+          <image
+            wx:if="{{item.logo}}"
+            class="brand-pill-img"
+            src="{{item.logo}}"
+            mode="aspectFit"
+            lazy-load
+          ></image>
+          <view class="brand-pill-placeholder" wx:else>
+            <text>{{item.initial}}</text>
+          </view>
+          <text class="brand-pill-text">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="section-card">
+      <view class="section-header">
+        <view class="section-icon-wrap">
+          <view class="svg-icon svg-info-circle" style="width:36rpx;height:36rpx;"></view>
+        </view>
+        <text class="section-title">联系我们</text>
+      </view>
+      <view class="contact-row">
+        <text class="contact-label">公司名称</text>
+        <text class="contact-value">{{companyName}}</text>
+      </view>
+      <view class="contact-divider"></view>
+      <view class="contact-row">
+        <text class="contact-label">业务咨询</text>
+        <text class="contact-value phone" bindtap="onCallPhone">{{contactPhone}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="copyright-section">
+    <t-divider />
+    <text class="copyright-text">Copyright © 2026 {{companyName}}</text>
+    <text class="copyright-sub">All Rights Reserved</text>
+  </view>
+</view>

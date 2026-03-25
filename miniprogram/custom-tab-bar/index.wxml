@@ -1,0 +1,45 @@
+<view class="tab-bar-wrap">
+  <view class="tab-bar-bg"></view>
+  <view class="tab-bar-inner">
+    <view
+      class="tab-item {{selected === 0 ? 'tab-item--active' : ''}}"
+      data-index="0"
+      data-path="pages/filter/filter"
+      bind:tap="onTabTap"
+    >
+      <view class="tab-icon-wrap">
+        <view class="tab-icon-bg {{selected === 0 ? 'tab-icon-bg--active' : ''}}"></view>
+        <view class="tab-icon">
+          <view class="icon-svg {{selected === 0 ? 'icon-active' : ''}}">
+            <view class="icon-library {{selected === 0 ? 'icon-library--active' : ''}}">
+              <view class="icon-lib-spine"></view>
+              <view class="icon-lib-page"></view>
+              <view class="icon-lib-lines">
+                <view class="icon-lib-line"></view>
+                <view class="icon-lib-line"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="tab-label {{selected === 0 ? 'tab-label--active' : ''}}">资料库</view>
+    </view>
+    <view
+      class="tab-item {{selected === 1 ? 'tab-item--active' : ''}}"
+      data-index="1"
+      data-path="pages/mine/mine"
+      bind:tap="onTabTap"
+    >
+      <view class="tab-icon-wrap">
+        <view class="tab-icon-bg {{selected === 1 ? 'tab-icon-bg--active' : ''}}"></view>
+        <view class="tab-icon">
+          <view class="icon-mine {{selected === 1 ? 'icon-mine--active' : ''}}">
+            <view class="icon-mine-head"></view>
+            <view class="icon-mine-body"></view>
+          </view>
+        </view>
+      </view>
+      <view class="tab-label {{selected === 1 ? 'tab-label--active' : ''}}">我的</view>
+    </view>
+  </view>
+</view>

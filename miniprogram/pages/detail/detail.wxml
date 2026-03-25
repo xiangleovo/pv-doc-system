@@ -1,0 +1,109 @@
+<view class="detail-page" wx:if="{{document && document.category}}">
+  <view class="hero-section">
+    <view class="hero-decor-1"></view>
+    <view class="hero-decor-2"></view>
+    <view class="hero-content">
+      <t-tag class="hero-cat-tag" size="small" variant="light">{{document.category.name}}</t-tag>
+      <text class="hero-title">{{document.title}}</text>
+      <view class="brand-row" wx:if="{{document.brand}}">
+        <view class="brand-pill">
+          <image
+            wx:if="{{document.brand.logo}}"
+            class="brand-pill-logo"
+            src="{{document.brand.logo}}"
+            mode="aspectFit"
+            lazy-load
+          ></image>
+          <view class="brand-pill-placeholder" wx:else>
+            <text>{{document.brand.name.substring(0,1)}}</text>
+          </view>
+          <text class="brand-pill-name">{{document.brand.name}}</text>
+        </view>
+        <view wx:if="{{document.panelType}}" class="panel-badge panel-badge--{{document.panelType}}">
+          <text>{{document.panelType === 'single' ? '单玻' : document.panelType === 'double' ? '双玻' : document.panelType === 'both' ? '通用' : ''}}</text>
+        </view>
+      </view>
+      <view class="stats-row">
+        <view class="stat-chip">
+          <view class="svg-icon svg-browse" style="width:26rpx;height:26rpx;"></view>
+          <text>{{document.views}} 次浏览</text>
+        </view>
+        <view class="stat-chip">
+          <view class="svg-icon svg-time" style="width:26rpx;height:26rpx;"></view>
+          <text>{{document.formattedDate}} 更新</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="content-section">
+    <view class="info-card">
+      <view class="info-card-title">文档信息</view>
+      <view class="info-row">
+        <text class="info-label">所属分类</text>
+        <text class="info-value">{{document.category.name}}</text>
+      </view>
+      <view class="info-divider"></view>
+      <view class="info-row" wx:if="{{document.brand}}">
+        <text class="info-label">所属品牌</text>
+        <view class="info-brand-row">
+          <image wx:if="{{document.brand.logo}}" class="info-brand-logo" src="{{document.brand.logo}}" mode="aspectFit"></image>
+          <view wx:else class="info-brand-avatar">
+            <text>{{document.brand.name.substring(0,1)}}</text>
+          </view>
+          <text class="info-value">{{document.brand.name}}</text>
+        </view>
+      </view>
+      <view class="info-divider" wx:if="{{document.brand}}"></view>
+      <view class="info-row" wx:if="{{document.productModel}}">
+        <text class="info-label">产品型号</text>
+        <text class="info-value">{{document.productModel}}</text>
+      </view>
+      <view class="info-divider" wx:if="{{document.productModel}}"></view>
+      <view class="info-row">
+        <text class="info-label">更新时间</text>
+        <text class="info-value">{{document.formattedDate}}</text>
+      </view>
+      <view class="info-divider"></view>
+      <view class="info-row">
+        <text class="info-label">浏览次数</text>
+        <text class="info-value primary">{{document.views}} 次</text>
+      </view>
+    </view>
+    <view class="desc-card" wx:if="{{document.description}}">
+      <view class="info-card-title">文档简介</view>
+      <text class="desc-text">{{document.description}}</text>
+    </view>
+  </view>
+  <view class="bottom-bar">
+    <view
+      class="bar-action {{isFavorited ? 'active' : ''}}"
+      bindtap="toggleFavorite"
+      hover-class="bar-action-hover"
+      hover-stay-time="120"
+    >
+      <view class="svg-icon {{isFavorited ? 'svg-star-filled' : 'svg-star'}}" style="width:44rpx;height:44rpx;"></view>
+      <text class="bar-action-label {{isFavorited ? 'active' : ''}}">{{isFavorited ? '已收藏' : '收藏'}}</text>
+    </view>
+    <button
+      class="bar-action"
+      open-type="share"
+      hover-class="bar-action-hover"
+      hover-stay-time="120"
+    >
+      <view class="svg-icon svg-share" style="width:44rpx;height:44rpx;"></view>
+      <text class="bar-action-label">分享</text>
+    </button>
+    <view class="pdf-btn" bindtap="openPDF" hover-class="pdf-btn-hover" hover-stay-time="120">
+      <text class="pdf-btn-text">查看 PDF</text>
+    </view>
+  </view>
+</view>
+<view class="loading-page" wx:if="{{loading}}">
+  <t-loading theme="circular" size="60rpx" text="加载中..." layout="vertical" />
+</view>
+<!-- 只有当明确知道加载失败时才显示空状态 -->
+<view class="empty-page" wx:if="{{loadFailed && !loading}}">
+  <view class="svg-icon svg-empty-unknown" style="width:160rpx;height:160rpx;opacity:0.45;"></view>
+  <text style="font-size:28rpx;color:var(--text-hint);">资料不存在或已被删除</text>
+  <t-button class="back-btn" variant="outline" bindtap="goBack">返回资料库</t-button>
+</view>

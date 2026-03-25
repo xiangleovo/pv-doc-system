@@ -1,0 +1,55 @@
+# 依赖
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 环境变量（.env.example 保留，不忽略）
+.env
+.env.local
+.env.production.local
+
+# 小程序本地备份目录（含旧版代码，不上传）
+miniprogram_backup_*/
+
+# 本地日志文件
+*.log
+
+# 日志
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 构建产物
+server/public/uploads/*
+!server/public/uploads/.gitkeep
+
+admin/dist/
+admin/.vite/
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# 测试覆盖率
+coverage/
+
+# PM2
+.pids/
+*.pid
+*.seed
+*.pid.lock

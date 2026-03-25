@@ -1,0 +1,162 @@
+<view class="mine-page">
+  <view class="user-hero">
+    <view class="hero-decor-1"></view>
+    <view class="hero-decor-2"></view>
+    <view class="avatar-wrap" bindtap="{{isLogin ? 'onEditProfile' : 'noop'}}">
+      <image
+        class="avatar-img"
+        src="{{userInfo.avatar || '/images/default-avatar.png'}}"
+        mode="aspectFill"
+        binderror="onAvatarError"
+      />
+      <view class="avatar-edit-badge" wx:if="{{isLogin}}">
+        <view class="svg-icon svg-edit" style="width:22rpx;height:22rpx;"></view>
+      </view>
+    </view>
+    <view class="user-info" wx:if="{{isLogin}}" bindtap="onEditProfile">
+      <text class="user-name">{{userInfo.nickname || '微信用户'}}</text>
+      <view class="user-badge">
+        <t-tag
+          size="small"
+          theme="{{userInfo.role === 'admin' ? 'warning' : 'primary'}}"
+          variant="light"
+        >{{userInfo.role === 'admin' ? '管理员' : '普通用户'}}</t-tag>
+      </view>
+      <text class="edit-hint">点击修改头像和昵称</text>
+    </view>
+    <view class="user-info" wx:else>
+      <text class="user-name">欢迎您</text>
+    </view>
+    <t-button
+      wx:if="{{!isLogin}}"
+      class="login-btn"
+      theme="light"
+      size="small"
+      open-type="getPhoneNumber"
+      bindgetphonenumber="onGetPhoneNumber"
+    >立即登录</t-button>
+    <view class="privacy-wrap" wx:if="{{!isLogin}}">
+      <text class="privacy-text">登录即表示同意</text>
+      <text class="privacy-text privacy-link" bindtap="onPrivacy">《用户协议》和《隐私政策》</text>
+    </view>
+  </view>
+  <view class="stats-card" wx:if="{{isLogin}}">
+    <view class="stat-item">
+      <text class="stat-value">{{stats.favorites || 0}}</text>
+      <text class="stat-label">收藏</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-value">{{stats.views || 0}}</text>
+      <text class="stat-label">浏览</text>
+    </view>
+  </view>
+  <view class="section-block">
+    <view class="section-header"><text class="section-title">我的服务</text></view>
+    <view class="menu-card">
+      <view class="menu-item" bindtap="onFavorite" hover-class="menu-item-hover" hover-stay-time="120">
+        <view class="menu-icon-wrap primary">
+          <image class="menu-icon-img" src="/images/icon-favorite.png" mode="aspectFit"></image>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">我的收藏</text>
+          <text class="menu-desc">查看收藏的资料</text>
+        </view>
+        <view class="svg-icon svg-chevron-right" style="width:32rpx;height:32rpx;"></view>
+      </view>
+      <t-divider line-color="#f0f4f8" />
+      <view class="menu-item" bindtap="onContact" hover-class="menu-item-hover" hover-stay-time="120">
+        <view class="menu-icon-wrap primary">
+          <image class="menu-icon-img" src="/images/icon-contact.png" mode="aspectFit"></image>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">联系电话</text>
+          <text class="menu-desc">{{contactPhone}}</text>
+        </view>
+        <view class="svg-icon svg-chevron-right" style="width:32rpx;height:32rpx;"></view>
+      </view>
+      <t-divider line-color="#f0f4f8" />
+      <view class="menu-item" bindtap="onAbout" hover-class="menu-item-hover" hover-stay-time="120">
+        <view class="menu-icon-wrap primary">
+          <image class="menu-icon-img" src="/images/icon-about.png" mode="aspectFit"></image>
+        </view>
+        <view class="menu-content">
+          <text class="menu-title">关于我们</text>
+          <text class="menu-desc">了解中浩光伏资料库</text>
+        </view>
+        <view class="svg-icon svg-chevron-right" style="width:32rpx;height:32rpx;"></view>
+      </view>
+    </view>
+  </view>
+  <view class="logout-section" wx:if="{{isLogin}}">
+    <t-button
+      class="logout-btn"
+      theme="danger"
+      variant="outline"
+      bindtap="onLogout"
+    >退出登录</t-button>
+  </view>
+  <view class="footer-fixed">
+    <text class="footer-copyright">© 2026 中浩光伏资料库 v1.1.5</text>
+  </view>
+  <t-popup
+    visible="{{showProfileModal}}"
+    placement="bottom"
+    bind:visible-change="onPopupChange"
+  >
+    <view class="profile-sheet">
+      <view class="sheet-handle"></view>
+      <view class="sheet-title">修改个人资料</view>
+      <text class="sheet-desc">完善您的头像、昵称和联系方式</text>
+      <view class="avatar-picker">
+        <button
+          class="avatar-picker-btn"
+          open-type="chooseAvatar"
+          bindchooseavatar="onChooseAvatar"
+        >
+          <image
+            class="avatar-img avatar-img--large"
+            src="{{tempAvatar || userInfo.avatar || '/images/default-avatar.png'}}"
+            mode="aspectFill"
+            binderror="onTempAvatarError"
+          />
+          <view class="picker-tip">
+            <view class="svg-icon svg-camera" style="width:24rpx;height:24rpx;"></view>
+            <text>点击选择头像</text>
+          </view>
+        </button>
+      </view>
+      <view class="form-wrap">
+        <view class="form-item">
+          <text class="form-label">昵称</text>
+          <t-input
+            class="form-input"
+            type="nickname"
+            placeholder="请输入昵称"
+            value="{{tempNickname}}"
+            bind:change="onNicknameInput"
+            maxlength="{{20}}"
+          />
+        </view>
+        <view class="form-item">
+          <text class="form-label">手机号</text>
+          <view class="phone-display">
+            <text class="phone-text">{{tempPhone || '未绑定'}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="sheet-actions">
+        <t-button class="sheet-btn" variant="outline" bindtap="onCancelProfile">取消</t-button>
+        <t-button class="sheet-btn" theme="primary" bindtap="onConfirmProfile">保存</t-button>
+      </view>
+    </view>
+  </t-popup>
+
+  <!-- 隐藏的手机号授权按钮（用于弹窗内点击重新授权） -->
+  <button
+    id="hiddenPhoneBtn"
+    class="hidden-phone-btn"
+    open-type="getPhoneNumber"
+    bindgetphonenumber="onGetPhoneNumber"
+  ></button>
+</view>

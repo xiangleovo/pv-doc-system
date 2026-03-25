@@ -1,0 +1,44 @@
+<view class="favorite-page">
+
+  <!-- 页头 -->
+  <view class="page-hero">
+    <view class="hero-decor-1"></view>
+    <view class="hero-decor-2"></view>
+    <view class="hero-content">
+      <text class="page-title">我的收藏</text>
+      <text class="page-subtitle">共 {{documents.length}} 条资料</text>
+    </view>
+  </view>
+
+  <!-- 骨架屏 -->
+  <view class="list-wrap" wx:if="{{loading}}">
+    <view class="skeleton-card" wx:for="{{[1,2,3]}}" wx:key="*this">
+      <view class="sk-row">
+        <view class="sk-icon skeleton-shimmer"></view>
+        <view class="sk-lines">
+          <view class="sk-title skeleton-shimmer"></view>
+          <view class="sk-sub skeleton-shimmer"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 资料列表 -->
+  <view class="list-wrap" wx:if="{{!loading && documents.length > 0}}">
+    <doc-card
+      wx:for="{{documents}}"
+      wx:key="id"
+      item="{{item}}"
+      show-panel="{{true}}"
+      show-desc="{{true}}"
+      bind:tap="onDocumentClick"
+    />
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-wrap" wx:if="{{!loading && documents.length === 0}}">
+    <view class="svg-icon svg-empty-star" style="width:160rpx;height:160rpx;opacity:0.45;"></view>
+    <text class="empty-desc">暂无收藏，快去资料库逛逛吧</text>
+  </view>
+
+</view>

@@ -1,0 +1,394 @@
+/* ── Detail 页样式 ── */
+page { background: var(--bg-page); }
+
+.detail-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ── Hero ── */
+.hero-section {
+  background: linear-gradient(150deg, #3a7fd5 0%, #4A90E2 40%, #6aaee8 100%);
+  padding: 56rpx 36rpx 48rpx;
+  position: relative;
+  overflow: hidden;
+  animation: fadeSlideDown 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 400rpx;
+  height: 400rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  animation: pulse 5s ease-in-out infinite;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: -5%;
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  animation: pulse 5s ease-in-out infinite 1.5s;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  animation: fadeSlideUp 0.5s 0.15s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.hero-cat-tag {
+  margin-bottom: 20rpx;
+  --td-tag-primary-color: rgba(255,255,255,0.9);
+  --td-tag-light-color: rgba(255,255,255,0.2);
+  --td-tag-light-border-color: rgba(255,255,255,0.4);
+}
+.hero-title {
+  display: block;
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.5;
+  margin-bottom: 24rpx;
+  letter-spacing: 0.5rpx;
+}
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  margin-bottom: 24rpx;
+}
+
+/* 品牌胶囊 */
+.brand-pill {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  background: rgba(255,255,255,0.18);
+  border: 1.5rpx solid rgba(255,255,255,0.35);
+  border-radius: 100rpx;
+  padding: 8rpx 20rpx 8rpx 10rpx;
+  backdrop-filter: blur(4px);
+}
+.brand-pill-logo {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
+}
+.brand-pill-placeholder {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.brand-pill-placeholder text {
+  font-size: 20rpx;
+  color: #fff;
+  font-weight: 700;
+}
+.brand-pill-name {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.95);
+  font-weight: 600;
+  letter-spacing: 0.5rpx;
+}
+
+/* 组件类型角标（Hero 区，蓝色背景上） */
+.panel-badge {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 7rpx 18rpx;
+  border-radius: 100rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.panel-badge text { line-height: 1; }
+.panel-badge--single {
+  background: rgba(255,255,255,0.92);
+  border: 1.5rpx solid rgba(74,144,226,0.3);
+  color: #3a7fd5;
+}
+.panel-badge--double {
+  background: rgba(255,255,255,0.92);
+  border: 1.5rpx solid rgba(74,144,226,0.3);
+  color: #3a7fd5;
+}
+.panel-badge--both {
+  background: rgba(255,255,255,0.92);
+  border: 1.5rpx solid rgba(74,144,226,0.3);
+  color: #3a7fd5;
+}
+
+/* 信息卡片品牌行 */
+.info-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.info-brand-logo {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  background: var(--bg-page);
+  border: 1rpx solid var(--border-color);
+}
+.info-brand-avatar {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 8rpx;
+  background: var(--primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.info-brand-avatar text {
+  font-size: 20rpx;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* 信息卡片内组件类型标签 */
+.info-panel-tag {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 100rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.info-panel-tag text { line-height: 1; }
+.info-panel-tag--single {
+  background: #eaf3fd;
+  border: 1.5rpx solid rgba(74,144,226,0.25);
+  color: #3a7fd5;
+}
+.info-panel-tag--double {
+  background: #eaf3fd;
+  border: 1.5rpx solid rgba(74,144,226,0.25);
+  color: #3a7fd5;
+}
+.info-panel-tag--both {
+  background: #eaf3fd;
+  border: 1.5rpx solid rgba(74,144,226,0.25);
+  color: #3a7fd5;
+}
+.stats-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.8);
+}
+/* Hero 区浏览图标覆盖为白色（全局 app.wxss 是灰色，此处局部修正） */
+.stat-chip .svg-browse {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255%2C255%2C255%2C0.8)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+
+/* ── 内容区 ── */
+.content-section {
+  flex: 1;
+  padding: 24rpx 24rpx 200rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+/* ── 文档信息卡片 ── */
+.info-card, .desc-card {
+  background: linear-gradient(135deg, #fff 0%, #fafbfc 100%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm), 0 1rpx 3rpx rgba(0,0,0,0.02);
+  padding: 28rpx 28rpx 8rpx;
+  border: 1rpx solid rgba(74, 144, 226, 0.06);
+  animation: fadeSlideUp 0.4s 0.25s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.desc-card {
+  animation-delay: 0.35s;
+}
+.info-card-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-hint);
+  letter-spacing: 1rpx;
+  text-transform: uppercase;
+  margin-bottom: 20rpx;
+}
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18rpx 0;
+  min-height: 72rpx;
+}
+.info-label {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.info-value {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-align: right;
+}
+.info-value.primary { color: var(--primary); }
+.info-value-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+.info-brand-logo {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 6rpx;
+}
+.info-divider {
+  height: 1rpx;
+  background: var(--border-color);
+}
+
+/* ── 描述卡片 ── */
+.desc-card { padding: 28rpx; }
+.desc-text {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+/* ── 底部操作栏 ── */
+.bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-top: 1.5rpx solid var(--border-color);
+  padding: 16rpx 28rpx env(safe-area-inset-bottom, 0);
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(74,144,226,0.08);
+}
+.bar-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6rpx;
+  width: 100rpx;
+  flex-shrink: 0;
+  padding: 10rpx 0;
+  border-radius: var(--radius-md);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  /* button reset */
+  background: transparent;
+  border: none;
+  margin: 0;
+  line-height: normal;
+  font-size: inherit;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.bar-action:active {
+  background: var(--bg-page);
+  transform: scale(0.95);
+}
+
+.bar-action.active {
+  animation: scalePop 0.4s ease;
+}
+.bar-action::after { border: none; }
+.bar-action-hover { background: var(--bg-page) !important; }
+.bar-action-label {
+  font-size: 20rpx;
+  color: var(--text-hint);
+  line-height: 1;
+}
+.bar-action-label.active { color: #f59e0b; }
+
+/* PDF 按钮（原生 view，自绘样式） */
+.pdf-btn {
+  flex: 1;
+  height: 92rpx;
+  background: linear-gradient(135deg, #4A90E2 0%, #6aaee8 100%);
+  border-radius: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 28rpx rgba(74,144,226,0.4), 0 2rpx 8rpx rgba(74,144,226,0.2);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pdf-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pdf-btn-hover {
+  transform: scale(0.97) translateY(2rpx);
+  box-shadow: 0 4rpx 16rpx rgba(74,144,226,0.3);
+}
+
+.pdf-btn-hover::before {
+  opacity: 1;
+}
+.pdf-btn-text {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 2rpx;
+}
+
+/* ── 加载 / 空状态 ── */
+.loading-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+.empty-page {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40rpx;
+  animation: fadeSlideUp 0.5s ease-out;
+  padding: 0 60rpx;
+}
+.empty-page .svg-icon {
+  animation: bounce 2s ease-in-out infinite;
+}
+.back-btn { 
+  width: 320rpx;
+  margin-top: 20rpx;
+}

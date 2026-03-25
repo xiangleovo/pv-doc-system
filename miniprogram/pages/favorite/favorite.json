@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "我的收藏",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "t-tag":    "tdesign-miniprogram/tag/tag",
+    "doc-card": "../../components/doc-card/doc-card"
+  }
+}

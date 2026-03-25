@@ -1,0 +1,175 @@
+/* ── 资料卡片组件样式 ── */
+.doc-card {
+  background: linear-gradient(135deg, #fff 0%, #fafbfc 100%);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm), 0 1rpx 3rpx rgba(0,0,0,0.02);
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  animation: fadeSlideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  border: 1rpx solid rgba(74, 144, 226, 0.06);
+  position: relative;
+}
+@keyframes fadeSlideUp {
+  0%   { opacity: 0; transform: translateY(18rpx); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.doc-card-press {
+  transform: scale(0.985) translateY(-2rpx);
+  box-shadow: var(--shadow-md), 0 8rpx 30rpx rgba(74, 144, 226, 0.12);
+  border-color: rgba(74, 144, 226, 0.15);
+}
+
+/* accent 色条 */
+.doc-card-accent {
+  width: 6rpx;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #4A90E2 0%, #6aaee8 50%, #8ec5f0 100%);
+  border-radius: 0 3rpx 3rpx 0;
+  transform-origin: top center;
+  animation: accentDrop 0.4s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes accentDrop {
+  0%   { transform: scaleY(0); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+.doc-card-press .doc-card-accent {
+  background: linear-gradient(180deg, #74b3f0, #4A90E2);
+  width: 8rpx;
+}
+
+.doc-card-body {
+  flex: 1;
+  padding: 24rpx 20rpx 20rpx;
+  min-width: 0;
+}
+.doc-arrow {
+  display: flex;
+  align-items: center;
+  padding-right: 16rpx;
+  flex-shrink: 0;
+}
+
+/* 卡片头部 */
+.doc-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+.doc-icon-wrap {
+  width: 72rpx; height: 72rpx;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary-light) 0%, #E8F4FD 100%);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2rpx 8rpx rgba(74, 144, 226, 0.1);
+  transition: all 0.3s ease;
+}
+
+.doc-card-press .doc-icon-wrap {
+  transform: scale(1.05);
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 226, 0.15);
+}
+.doc-icon { width: 40rpx; height: 40rpx; }
+.doc-title-wrap { flex: 1; min-width: 0; }
+.doc-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 4rpx;
+}
+.doc-desc {
+  font-size: 22rpx;
+  color: var(--text-hint);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+.doc-brand {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 10rpx 18rpx;
+  background: linear-gradient(135deg, var(--bg-page) 0%, #f5f7fa 100%);
+  border-radius: 100rpx;
+  border: 1.5rpx solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.doc-card-press .doc-brand {
+  background: linear-gradient(135deg, var(--primary-light) 0%, #E8F4FD 100%);
+  border-color: rgba(74, 144, 226, 0.2);
+}
+.brand-tag-img {
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 50%;
+}
+.brand-tag-placeholder {
+  width: 34rpx;
+  height: 34rpx;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-placeholder-text { font-size: 18rpx; color: #fff; font-weight: 700; }
+.brand-tag-text { font-size: 22rpx; color: var(--text-secondary); font-weight: 500; }
+
+/* 卡片底部 meta */
+.doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.meta-tag-cat {
+  --td-tag-primary-color: var(--primary);
+  --td-tag-light-color: var(--primary-light);
+  flex-shrink: 0;
+}
+.meta-tag-panel { flex-shrink: 0; }
+
+.doc-views {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  flex-shrink: 0;
+}
+.views-num { font-size: 22rpx; color: var(--text-hint); line-height: 1; }
+
+/* 日期推到最右 */
+.doc-date {
+  font-size: 22rpx;
+  color: var(--text-hint);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ── 组件内 SVG 图标（app.wxss 样式隔离不透传，需在组件内重定义） ── */
+.svg-icon {
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex-shrink: 0;
+}
+.svg-browse {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+.svg-chevron-right {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'/%3E%3C/svg%3E");
+}

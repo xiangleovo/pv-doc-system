@@ -1,0 +1,58 @@
+/* ── Favorite 页样式 ── */
+.favorite-page {
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding-bottom: 40rpx;
+}
+
+/* ── 页头（hero-decor-1/2 已在 app.wxss 全局定义） ── */
+.page-hero {
+  background: linear-gradient(135deg, #4A90E2 0%, #6aaee8 60%, #8ec5f0 100%);
+  padding: 60rpx 36rpx 44rpx;
+  position: relative;
+  overflow: hidden;
+}
+.hero-content { position: relative; z-index: 1; }
+.page-title {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8rpx;
+}
+.page-subtitle { font-size: 26rpx; color: rgba(255,255,255,0.75); }
+
+/* ── 列表容器 ── */
+.list-wrap {
+  padding: 24rpx 24rpx 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+/* ── 骨架屏 ── */
+.skeleton-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 28rpx 24rpx;
+  box-shadow: var(--shadow-sm);
+}
+.sk-row { display: flex; align-items: center; gap: 20rpx; }
+.sk-icon { width: 68rpx; height: 68rpx; border-radius: var(--radius-md); flex-shrink: 0; }
+.sk-lines { flex: 1; display: flex; flex-direction: column; gap: 12rpx; }
+.sk-title { height: 32rpx; border-radius: 8rpx; width: 65%; }
+.sk-sub   { height: 24rpx; border-radius: 8rpx; width: 40%; }
+
+/* ── 空状态 ── */
+.empty-wrap {
+  padding: 100rpx 0 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+}
+.empty-desc {
+  font-size: 28rpx;
+  color: var(--text-hint);
+  text-align: center;
+}

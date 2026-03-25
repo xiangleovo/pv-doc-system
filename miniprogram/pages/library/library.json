@@ -1,0 +1,12 @@
+{
+  "navigationBarTitleText": "资料库",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "t-pull-down-refresh": "tdesign-miniprogram/pull-down-refresh/pull-down-refresh",
+    "t-skeleton":          "tdesign-miniprogram/skeleton/skeleton",
+    "t-loading":           "tdesign-miniprogram/loading/loading",
+    "t-search":            "tdesign-miniprogram/search/search",
+    "t-tag":               "tdesign-miniprogram/tag/tag",
+    "doc-card":            "../../components/doc-card/doc-card"
+  }
+}

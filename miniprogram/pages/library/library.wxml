@@ -1,0 +1,100 @@
+<view class="library-page">
+  <view class="search-wrap">
+    <view class="search-container">
+      <t-search
+        class="td-search"
+        value="{{searchKeyword}}"
+        placeholder="搜索资料名称"
+        bind:change="onSearchInput"
+        bind:submit="onSearch"
+        shape="round"
+        left-icon=""
+        clearable="{{false}}"
+        focus="{{searchFocus}}"
+      >
+        <view slot="left-icon" class="search-left-icon">
+          <view class="svg-icon svg-search"></view>
+        </view>
+      </t-search>
+    </view>
+  </view>
+  <view class="content-scroll" style="top: {{scrollTop}}px;">
+    <t-pull-down-refresh
+      class="pull-refresh"
+      value="{{refreshing}}"
+      loading-bar-height="60"
+      pull-distance="{{75}}"
+      loading-props="{{ { theme: 'circular', size: '44rpx', text: '正在刷新', layout: 'horizontal' } }}"
+      loading-texts="{{ ['下拉刷新', '松手刷新', '正在刷新', '刷新完成'] }}"
+      scroll-top="{{listScrollTop}}"
+      disabled="{{pullRefreshDisabled}}"
+      bind:refresh="onRefresh"
+      bind:change="onRefreshChange"
+      bind:scrolltolower="onScrollToLower"
+    >
+      <view class="content-body">
+        <view class="filter-hint" wx:if="{{currentFilter.category || currentFilter.brand}}">
+          <view class="filter-tag">
+            <text wx:if="{{currentFilter.category}}">{{currentFilter.category}}</text>
+            <text wx:if="{{currentFilter.category && currentFilter.brand}}"> · </text>
+            <text wx:if="{{currentFilter.brand}}">{{currentFilter.brand}}</text>
+          </view>
+          <view class="clear-filter" bindtap="goBackToFilter">返回筛选</view>
+        </view>
+        <view class="document-list-wrap {{listFading ? 'list-fading' : ''}}">
+          <view class="document-list">
+            <view wx:if="{{loading && documents.length === 0}}" class="skeleton-list">
+              <view class="skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this">
+                <t-skeleton
+                  loading="{{true}}"
+                  animation="gradient"
+                  row-col="{{skeletonRowCol}}"
+                />
+              </view>
+            </view>
+            <view class="search-hint" wx:if="{{searchKeyword && !loading}}">
+              <view class="svg-icon svg-search"></view>
+              <text>"{{searchKeyword}}" 的结果 · {{documents.length}} 条</text>
+              <view class="clear-btn" bindtap="clearSearch">
+                <view class="svg-icon svg-close"></view>
+              </view>
+            </view>
+            <doc-card
+              wx:for="{{documents}}"
+              wx:key="id"
+              item="{{item}}"
+              show-panel="{{true}}"
+              bind:tap="onDocumentClick"
+              style="animation-delay: {{index < 6 ? index * 50 : 250}}ms"
+            />
+            <view class="empty-wrap" wx:if="{{!loading && documents.length === 0 && (brands.length > 0 || categories.length > 0)}}">
+              <view class="empty-icon svg-icon {{searchKeyword ? 'svg-empty-search' : 'svg-empty-files'}}"></view>
+              <text class="empty-desc">{{searchKeyword ? '未找到相关结果' : '暂无资料'}}</text>
+              <text class="empty-subdesc">{{searchKeyword ? '换个关键词试试看吧' : '该分类下暂时没有资料'}}</text>
+            </view>
+            <view class="loading-wrap" wx:if="{{loading && documents.length > 0}}">
+              <t-loading theme="dots" size="48rpx" />
+            </view>
+            <view class="load-more-wrap" wx:if="{{documents.length > 0 && !loading}}">
+              <view wx:if="{{loadingMore}}" class="load-more-loading">
+                <t-loading theme="dots" size="40rpx" />
+                <text>加载中...</text>
+              </view>
+              <view wx:elif="{{!hasMore}}" class="load-more-end">
+                <text>— 已加载全部 {{documents.length}} 条 —</text>
+              </view>
+              <view wx:else class="load-more-trigger" bindtap="onScrollToLower">
+                <text>上拉或点击加载更多</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        <view class="no-data-wrap" wx:if="{{!loading && categories.length === 0 && brands.length === 0}}">
+          <view class="empty-icon svg-icon svg-empty-service"></view>
+          <text class="empty-desc">暂无数据，请联系管理员添加</text>
+        </view>
+      </view>
+      <view class="scroll-bottom-safe"></view>
+    </t-pull-down-refresh>
+  </view>
+</view>

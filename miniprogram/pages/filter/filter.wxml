@@ -1,0 +1,74 @@
+<view class="filter-page">
+  <view class="top-header">
+    <view class="header-content">
+      <view class="company-section">
+        <view class="company-logo">
+          <image src="/images/logo-zhonghao.png" class="company-logo-img" mode="aspectFill"></image>
+        </view>
+        <view class="company-text">
+          <view class="company-title">安徽中浩能源</view>
+          <view class="company-subtitle">一线品牌组件+逆变器代理</view>
+        </view>
+      </view>
+      <view class="search-section" bindtap="onSearchTap">
+        <view class="search-box">
+          <view class="search-icon-wrap">
+            <view class="svg-icon svg-search-sm"></view>
+          </view>
+          <text class="search-placeholder">搜索资料名称</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="main-content">
+    <view class="category-menu">
+      <scroll-view scroll-y class="menu-scroll">
+        <view 
+          wx:for="{{categories}}" 
+          wx:key="id" 
+          class="menu-item {{currentCategory.id === item.id ? 'active' : ''}}"
+          bindtap="onCategoryTap"
+          data-category="{{item}}"
+        >
+          <view class="menu-text">{{item.name}}</view>
+        </view>
+      </scroll-view>
+    </view>
+    <view class="brand-list">
+      <scroll-view scroll-y class="brand-scroll">
+        <view class="brand-grid">
+          <view 
+            class="brand-card"
+            wx:for="{{filteredBrands}}" 
+            wx:key="id" 
+            wx:for-item="item"
+            bindtap="onBrandTap"
+            data-brand="{{item}}"
+            style="animation-delay: {{item._animationDelay || index * 50}}ms"
+          >
+            <view class="brand-card-logo">
+              <view class="card-avatar-wrap">
+                <image wx:if="{{item.logo}}" src="{{item.logo}}" class="card-avatar-img" mode="aspectFill"></image>
+                <view wx:else class="card-placeholder">{{item.name.substring(0,1)}}</view>
+              </view>
+              <view class="brand-badge {{item.tier === '一线' ? 'badge-1' : 'badge-2'}}">
+                {{item.tier}}
+              </view>
+            </view>
+            <view class="brand-card-info">
+              <view class="brand-name">{{item.name}}</view>
+              <view class="brand-en">{{item.enName}}</view>
+              <view class="brand-docs">
+                <view class="svg-icon svg-doc-icon-sm"></view>
+                <text>{{item.docCount}}条资料</text>
+              </view>
+            </view>
+            <view class="brand-card-arrow">
+              <view class="svg-icon svg-chevron-right-sm"></view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

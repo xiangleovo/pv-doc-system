@@ -1,0 +1,67 @@
+<view
+  class="doc-card"
+  data-id="{{item.id}}"
+  bindtap="onTap"
+  hover-class="doc-card-press"
+  hover-stay-time="150"
+>
+  <view class="doc-card-accent"></view>
+  <view class="doc-card-body">
+    <view class="doc-header">
+      <view class="doc-icon-wrap">
+        <image class="doc-icon" src="/images/icon-doc.png" mode="aspectFit"></image>
+      </view>
+      <view class="doc-title-wrap">
+        <text class="doc-title">{{item.title}}</text>
+        <text class="doc-desc" wx:if="{{showDesc && item.description}}">{{item.description}}</text>
+      </view>
+      <view class="doc-brand" wx:if="{{item.brand}}">
+          <image
+            wx:if="{{item.brand.logo}}"
+            class="brand-tag-img"
+            src="{{item.brand.logo}}"
+            mode="aspectFit"
+            lazy-load
+          ></image>
+          <view class="brand-tag-placeholder" wx:else>
+            <text class="brand-placeholder-text">{{item.brand.name.substring(0,1)}}</text>
+          </view>
+          <text class="brand-tag-text">{{item.brand.name}}</text>
+        </view>
+    </view>
+    <view class="doc-meta">
+      <t-tag class="meta-tag-cat" size="small" variant="light">{{item.category.name}}</t-tag>
+      <block wx:if="{{showPanel}}">
+        <t-tag
+          wx:if="{{item.panelType === 'single'}}"
+          class="meta-tag-panel"
+          size="small"
+          variant="light"
+          theme="primary"
+        >单玻</t-tag>
+        <t-tag
+          wx:elif="{{item.panelType === 'double'}}"
+          class="meta-tag-panel"
+          size="small"
+          variant="light"
+          theme="primary"
+        >双玻</t-tag>
+        <t-tag
+          wx:elif="{{item.panelType === 'both'}}"
+          class="meta-tag-panel"
+          size="small"
+          variant="light"
+          theme="primary"
+        >通用</t-tag>
+      </block>
+      <view class="doc-views">
+        <view class="svg-icon svg-browse" style="width:22rpx;height:22rpx;"></view>
+        <text class="views-num">{{item.views}}</text>
+      </view>
+      <text class="doc-date" wx:if="{{item.formattedDate}}">{{item.formattedDate}}</text>
+    </view>
+  </view>
+  <view class="doc-arrow">
+    <view class="svg-icon svg-chevron-right" style="width:32rpx;height:32rpx;"></view>
+  </view>
+</view>
