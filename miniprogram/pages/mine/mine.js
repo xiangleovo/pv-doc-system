@@ -13,7 +13,8 @@ Page({
     showProfileModal: false,
     tempAvatar: '',
     tempNickname: '',
-    tempPhone: ''
+    tempPhone: '',
+    appVersion: ''
   },
 
   onShow() {
@@ -27,7 +28,10 @@ Page({
     if (!phone) {
       phone = wx.getStorageSync('contactPhone')
     }
-    this.setData({ contactPhone: phone || '' })
+    this.setData({ 
+      contactPhone: phone || '',
+      appVersion: app.version || '1.0.0'
+    })
 
     this.checkLogin(() => {
       if (this.data.isLogin) {

@@ -97,7 +97,7 @@
     >退出登录</t-button>
   </view>
   <view class="footer-fixed">
-    <text class="footer-copyright">© 2026 中浩光伏资料库 v1.1.5</text>
+    <text class="footer-copyright">© 2026 中浩光伏资料库 v{{appVersion}}</text>
   </view>
   <t-popup
     visible="{{showProfileModal}}"
