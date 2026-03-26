@@ -1,0 +1,32 @@
+/* 隐私政策页面 - 纯文本样式 */
+.privacy-page {
+  height: 100vh;
+  background: #fff;
+}
+
+.privacy-content {
+  padding: 20rpx 32rpx 40rpx;
+}
+
+.paragraph {
+  font-size: 22rpx;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 8rpx;
+  text-align: justify;
+}
+
+.section-title {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #333;
+  margin-top: 14rpx;
+  margin-bottom: 6rpx;
+}
+
+.update-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 24rpx;
+  text-align: center;
+}

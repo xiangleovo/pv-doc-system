@@ -107,3 +107,47 @@
   <text style="font-size:28rpx;color:var(--text-hint);">资料不存在或已被删除</text>
   <t-button class="back-btn" variant="outline" bindtap="goBack">返回资料库</t-button>
 </view>
+
+<!-- 隐私授权登录弹窗 -->
+<t-popup
+  visible="{{showLoginModal}}"
+  placement="bottom"
+  bind:visible-change="onLoginPopupChange"
+>
+  <view class="login-sheet">
+    <view class="login-drag-tip"></view>
+    <view class="login-banner">
+      <view class="login-banner-bg"></view>
+      <view class="login-banner-icon">
+        <image src="/images/logo-zhonghao-white.png" mode="aspectFit" class="login-logo"></image>
+      </view>
+      <view class="login-banner-content">
+        <text class="login-banner-title">欢迎使用光伏资料库</text>
+        <text class="login-banner-subtitle">注册即享更多权益</text>
+      </view>
+    </view>
+    <view class="login-body">
+      <text class="login-desc">未注册的手机号将自动注册，且表示您已阅读并同意</text>
+      <view class="login-agreement-row" bindtap="onToggleAgree">
+        <view class="login-checkbox {{hasAgreed ? 'checked' : ''}}">
+          <view class="login-check-icon" wx:if="{{hasAgreed}}"></view>
+        </view>
+        <view class="login-agreement-text">
+          <text class="login-agreement-prefix">已阅读并同意</text>
+          <text class="login-agreement-link" catchtap="onGoAgreement">《用户协议》</text>
+          <text class="login-agreement-prefix">和</text>
+          <text class="login-agreement-link" catchtap="onGoPrivacy">《隐私政策》</text>
+        </view>
+      </view>
+    </view>
+    <view class="login-modal-footer">
+      <button
+        class="login-btn {{hasAgreed ? 'active' : 'disabled'}}"
+        open-type="{{hasAgreed ? 'getPhoneNumber' : ''}}"
+        bindgetphonenumber="onGetPhoneNumber"
+        bindtap="{{hasAgreed ? '' : 'onLoginBtnTap'}}"
+      >手机号一键登录</button>
+      <view class="login-cancel" bindtap="onCloseLoginModal">不同意</view>
+    </view>
+  </view>
+</t-popup>

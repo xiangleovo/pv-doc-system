@@ -1,0 +1,25 @@
+/* 用户协议页面 - 纯文本样式 */
+.agreement-page {
+  height: 100vh;
+  background: #fff;
+}
+
+.agreement-content {
+  padding: 20rpx 32rpx 40rpx;
+}
+
+.paragraph {
+  font-size: 22rpx;
+  color: #333;
+  line-height: 1.5;
+  margin-bottom: 10rpx;
+  text-align: justify;
+}
+
+.section-title {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #333;
+  margin-top: 16rpx;
+  margin-bottom: 6rpx;
+}

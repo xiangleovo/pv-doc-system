@@ -24,21 +24,14 @@
       </view>
       <text class="edit-hint">点击修改头像和昵称</text>
     </view>
-    <view class="user-info" wx:else>
-      <text class="user-name">欢迎您</text>
+    <view class="guest-info" wx:else>
+      <text class="guest-title">欢迎使用中浩光伏资料库</text>
+      <text class="guest-subtitle">登录后可收藏资料、同步数据</text>
+      <view class="guest-login-btn" bindtap="onShowLoginModal">
+        <text class="guest-login-text">点击登录</text>
+      </view>
     </view>
-    <t-button
-      wx:if="{{!isLogin}}"
-      class="login-btn"
-      theme="light"
-      size="small"
-      open-type="getPhoneNumber"
-      bindgetphonenumber="onGetPhoneNumber"
-    >立即登录</t-button>
-    <view class="privacy-wrap" wx:if="{{!isLogin}}">
-      <text class="privacy-text">登录即表示同意</text>
-      <text class="privacy-text privacy-link" bindtap="onPrivacy">《用户协议》和《隐私政策》</text>
-    </view>
+
   </view>
   <view class="stats-card" wx:if="{{isLogin}}">
     <view class="stat-item">
@@ -170,4 +163,48 @@
     open-type="getPhoneNumber"
     bindgetphonenumber="onGetPhoneNumber"
   ></button>
+
+  <!-- 隐私授权登录弹窗 -->
+  <t-popup
+    visible="{{showLoginModal}}"
+    placement="bottom"
+    bind:visible-change="onLoginPopupChange"
+  >
+    <view class="login-sheet">
+      <view class="login-drag-tip"></view>
+      <view class="login-banner">
+        <view class="login-banner-bg"></view>
+        <view class="login-banner-icon">
+          <image src="/images/logo-zhonghao-white.png" mode="aspectFit" class="login-logo"></image>
+        </view>
+        <view class="login-banner-content">
+          <text class="login-banner-title">欢迎使用光伏资料库</text>
+          <text class="login-banner-subtitle">注册即享更多权益</text>
+        </view>
+      </view>
+      <view class="login-body">
+        <text class="login-desc">未注册的手机号将自动注册，且表示您已阅读并同意</text>
+        <view class="login-agreement-row" bindtap="onToggleAgree">
+          <view class="login-checkbox {{hasAgreed ? 'checked' : ''}}">
+            <view class="login-check-icon" wx:if="{{hasAgreed}}"></view>
+          </view>
+          <view class="login-agreement-text">
+            <text class="login-agreement-prefix">已阅读并同意</text>
+            <text class="login-agreement-link" catchtap="onGoAgreement">《用户协议》</text>
+            <text class="login-agreement-prefix">和</text>
+            <text class="login-agreement-link" catchtap="onGoPrivacy">《隐私政策》</text>
+          </view>
+        </view>
+      </view>
+      <view class="login-modal-footer">
+        <button
+          class="login-btn {{hasAgreed ? 'active' : 'disabled'}}"
+          open-type="{{hasAgreed ? 'getPhoneNumber' : ''}}"
+          bindgetphonenumber="onGetPhoneNumber"
+          bindtap="{{hasAgreed ? '' : 'onLoginBtnTap'}}"
+        >手机号一键登录</button>
+        <view class="login-cancel" bindtap="onCloseLoginModal">不同意</view>
+      </view>
+    </view>
+  </t-popup>
 </view>

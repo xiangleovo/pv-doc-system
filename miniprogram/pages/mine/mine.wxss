@@ -158,26 +158,51 @@
 
 .svg-phone { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234A90E2'%3E%3Cpath d='M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z'/%3E%3C/svg%3E"); }
 
-/* 未登录按钮 */
-.login-btn {
-  margin-top: 16rpx;
-  --td-button-light-color: #fff;
-  --td-button-light-active-color: rgba(255,255,255,0.85);
-  color: var(--primary) !important;
-  font-weight: 600;
+/* 未登录状态 - 访客信息 */
+.guest-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  animation: fadeSlideUp 0.5s 0.2s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
-/* 隐私协议 */
-.privacy-wrap {
-  margin-top: 16rpx;
-  text-align: center;
-}
-.privacy-text {
-  font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.85);
-}
-.privacy-link {
+.guest-title {
+  font-size: 36rpx;
+  font-weight: 700;
   color: #fff;
+  letter-spacing: 2rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+}
+
+.guest-subtitle {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.8);
+  font-weight: 400;
+}
+
+.guest-login-btn {
+  margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 16rpx 32rpx;
+  background: rgba(255,255,255,0.15);
+  border: 2rpx solid rgba(255,255,255,0.3);
+  border-radius: 48rpx;
+  backdrop-filter: blur(8rpx);
+  transition: all 0.3s ease;
+}
+
+.guest-login-btn:active {
+  background: rgba(255,255,255,0.25);
+  transform: scale(0.98);
+}
+
+.guest-login-text {
+  font-size: 26rpx;
+  color: #fff;
+  font-weight: 500;
 }
 
 
@@ -412,3 +437,193 @@
   gap: 20rpx;
 }
 .sheet-btn { flex: 1; }
+
+/* 登录授权弹窗 - 使用 t-popup 组件 */
+.login-sheet {
+  background: #fff;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  overflow: visible;
+  position: relative;
+}
+
+/* Banner区域 */
+.login-banner {
+  width: 100%;
+  height: 280rpx;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-banner-bg {
+  position: absolute;
+  top: -32rpx;
+  left: -4rpx;
+  right: -4rpx;
+  bottom: 0;
+  background: linear-gradient(135deg, #3a7fd5 0%, #4A90E2 40%, #6aaee8 70%, #8ec5f0 100%);
+  border-radius: 36rpx 36rpx 0 0;
+  z-index: 0;
+}
+
+.login-banner-icon {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 20rpx;
+}
+
+.login-logo {
+  width: 150rpx;
+  height: 150rpx;
+  opacity: 1;
+}
+
+.login-banner-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+  margin-bottom: 25rpx;
+}
+
+.login-banner-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 1rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
+}
+
+.login-banner-subtitle {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.95);
+  font-weight: 500;
+  letter-spacing: 1rpx;
+}
+
+/* 拖动提示条 */
+.login-drag-tip {
+  width: 80rpx;
+  height: 6rpx;
+  background: rgba(255,255,255,0.5);
+  border-radius: 3rpx;
+  margin: 16rpx auto 0;
+  position: relative;
+  z-index: 3;
+}
+
+/* 弹窗内容区域 */
+.login-body {
+  padding: 16rpx 48rpx 24rpx;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.login-desc {
+  font-size: 26rpx;
+  color: #64748b;
+  line-height: 1.6;
+  display: block;
+  margin-bottom: 32rpx;
+}
+
+.login-agreement-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.login-checkbox {
+  width: 36rpx;
+  height: 36rpx;
+  border: 2rpx solid #d1d5db;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.login-checkbox.checked {
+  background: #4A90E2;
+  border-color: #4A90E2;
+}
+
+.login-check-icon {
+  width: 18rpx;
+  height: 18rpx;
+  background: #fff;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+.login-agreement-text {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4rpx;
+  align-items: center;
+}
+
+.login-agreement-prefix {
+  font-size: 26rpx;
+  color: #64748b;
+}
+
+.login-agreement-link {
+  font-size: 26rpx;
+  color: #4A90E2;
+}
+
+/* 弹窗底部按钮 */
+.login-modal-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 48rpx 40rpx;
+  gap: 24rpx;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.login-btn {
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  background: #cbd5e1;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 48rpx;
+  border: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  letter-spacing: 2rpx;
+}
+
+.login-btn.active {
+  background: linear-gradient(135deg, #3a7fd5 0%, #4A90E2 40%, #6aaee8 100%);
+  box-shadow: 0 8rpx 24rpx rgba(74, 144, 226, 0.35);
+}
+
+.login-btn.active:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 12rpx rgba(74, 144, 226, 0.25);
+}
+
+.login-btn::after {
+  display: none;
+}
+
+.login-cancel {
+  font-size: 26rpx;
+  color: #94a3b8;
+  padding: 8rpx 32rpx;
+}

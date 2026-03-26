@@ -1,6 +1,6 @@
 const { request } = require('../../utils/request')
 const { formatDate } = require('../../utils/format')
-const { getAppSafe, showLoading, hideLoading, showSuccess, showError, vibrate } = require('../../utils/common')
+const { getAppSafe, showLoading, hideLoading, showSuccess, showError, vibrate, resolveAvatar } = require('../../utils/common')
 
 Page({
   data: {
@@ -12,7 +12,9 @@ Page({
     downloading: false,      // 下载中状态
     downloadProgress: 0,    // 下载进度
     cachedPdfPath: null,    // 缓存的 PDF 路径
-    preloading: false       // 是否正在预加载
+    preloading: false,      // 是否正在预加载
+    showLoginModal: false,  // 登录弹窗
+    hasAgreed: false        // 是否同意协议
   },
 
   onLoad(options) {
@@ -40,6 +42,10 @@ Page({
     this.setData({ id })
     this.loadDocument(id)
     this.loadFavoriteStatus(id)
+  },
+
+  onShow() {
+    // 页面显示
   },
 
   onUnload() {
@@ -258,16 +264,9 @@ Page({
   openPDF() {
     const app = getAppSafe()
     if (!app.globalData.token) {
-      wx.showModal({
-        title: '提示',
-        content: '查看资料需要先登录',
-        confirmText: '去登录',
-        success: (res) => {
-          if (res.confirm) {
-            wx.switchTab({ url: '/pages/mine/mine' })
-          }
-        }
-      })
+      // 未登录：提示并弹出登录弹窗
+      showError('请先登录')
+      this.setData({ showLoginModal: true, hasAgreed: false })
       return
     }
 
@@ -342,8 +341,8 @@ Page({
       // 编码失败则使用原始 URL
     }
 
-    // 显示下载提示
-    wx.showLoading({ title: '正在打开文档...', mask: true })
+    // 显示下载提示（固定7个字符，避免换行）
+    wx.showLoading({ title: '正在打开文档', mask: true })
     this.setData({ downloading: true, downloadProgress: 0 })
 
     // 使用 downloadFile API（微信官方推荐的文件下载方式）
@@ -427,9 +426,9 @@ Page({
       const progress = res.progress
       this.setData({ downloadProgress: progress })
       
-      // 更新 loading 提示（保持文字长度一致，避免字体大小变化）
+      // 更新 loading 提示（固定7个字符，避免换行）
       if (progress < 100) {
-        wx.showLoading({ title: `正在打开文档 ${progress}%`, mask: true })
+        wx.showLoading({ title: `打开中 ${progress}%`, mask: true })
       }
     })
   },
@@ -474,6 +473,106 @@ Page({
       showError('操作失败，请重试')
     }
   },
+
+  // ── 登录弹窗相关方法 ──
+
+  // 手机号授权登录
+  async onGetPhoneNumber(e) {
+    const { code, errno, errMsg } = e.detail || {}
+    if (!code) {
+      console.log('手机号授权失败:', errno, errMsg)
+      wx.showToast({ title: '需要授权手机号才能登录', icon: 'none', duration: 2000 })
+      return
+    }
+
+    try {
+      showLoading('登录中...')
+
+      const loginRes = await new Promise((resolve, reject) => {
+        wx.login({ success: resolve, fail: reject })
+      })
+      if (!loginRes.code) throw new Error('获取登录凭证失败')
+
+      const res = await request({
+        url: '/auth/wx/login',
+        method: 'POST',
+        data: { code: loginRes.code, phoneCode: code }
+      })
+
+      const app = getAppSafe()
+      app.globalData.token = res.data.token
+      app.globalData.userInfo = res.data.user
+      wx.setStorageSync('token', res.data.token)
+      wx.setStorageSync('userInfo', res.data.user)
+
+      // 登录成功，关闭弹窗
+      this.setData({ showLoginModal: false })
+
+      hideLoading()
+
+      const nickname = res.data.user.nickname || ''
+      const isNewUser = !nickname || nickname === '微信用户' || /^\d{3}\*{4}\d{4}$/.test(nickname)
+      if (isNewUser) {
+        wx.showToast({ title: '登录成功', icon: 'none' })
+      } else {
+        showSuccess('登录成功')
+      }
+
+      // 记录浏览
+      if (app.globalData.token && this.data.id) {
+        request({
+          url: '/documents/view/record',
+          method: 'POST',
+          data: { documentId: this.data.id },
+          needAuth: true
+        }).catch(() => {})
+      }
+    } catch (error) {
+      hideLoading()
+      showError(error.message || '登录失败')
+    }
+  },
+
+  // 显示登录弹窗
+  onShowLoginModal() {
+    this.setData({ showLoginModal: true, hasAgreed: false })
+  },
+
+  // 关闭登录弹窗
+  onCloseLoginModal() {
+    this.setData({ showLoginModal: false })
+  },
+
+  // 登录弹窗显隐变化（t-popup 组件回调）
+  onLoginPopupChange(e) {
+    if (!e.detail.visible) {
+      this.setData({ showLoginModal: false })
+    }
+  },
+
+  // 切换同意状态
+  onToggleAgree() {
+    this.setData({ hasAgreed: !this.data.hasAgreed })
+  },
+
+  // 跳转到用户协议
+  onGoAgreement() {
+    wx.navigateTo({ url: '/pages/agreement/agreement' })
+  },
+
+  // 跳转到隐私政策
+  onGoPrivacy() {
+    wx.navigateTo({ url: '/pages/privacy/privacy' })
+  },
+
+  // 未勾选时的提示
+  onLoginBtnTap() {
+    if (!this.data.hasAgreed) {
+      showError('请先阅读并同意用户协议和隐私政策')
+    }
+  },
+
+  // ── 其他方法 ──
 
   // 返回资料库首页
   goBack() {

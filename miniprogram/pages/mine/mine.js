@@ -24,7 +24,9 @@ Page({
     tempNickname: '',
     tempPhone: '',
     appVersion: '',
-    cacheSize: '0 KB'
+    cacheSize: '0 KB',
+    showLoginModal: false,
+    hasAgreed: false
   },
 
   onShow() {
@@ -183,7 +185,7 @@ Page({
       wx.setStorageSync('userInfo', res.data.user)
 
       const displayUser = { ...res.data.user, avatar: resolveAvatar(res.data.user.avatar) }
-      this.setData({ isLogin: true, userInfo: displayUser })
+      this.setData({ isLogin: true, userInfo: displayUser, showLoginModal: false })
 
       hideLoading()
 
@@ -372,7 +374,76 @@ Page({
     wx.navigateTo({ url: '/pages/about/about' })
   },
 
-  // 用户协议和隐私政策
+  // 显示登录弹窗
+  onShowLoginModal() {
+    vibrate()
+    this.setData({ showLoginModal: true, hasAgreed: false })
+  },
+
+  // 关闭登录弹窗
+  onCloseLoginModal() {
+    this.setData({ showLoginModal: false })
+  },
+
+  // 登录弹窗显隐变化（t-popup 组件回调）
+  onLoginPopupChange(e) {
+    if (!e.detail.visible) {
+      this.setData({ showLoginModal: false })
+    }
+  },
+
+  // 触摸开始
+  onTouchStart(e) {
+    this.startY = e.touches[0].clientY
+    this.lastY = this.startY
+  },
+
+  // 触摸移动
+  onTouchMove(e) {
+    this.lastY = e.touches[0].clientY
+  },
+
+  // 触摸结束
+  onTouchEnd(e) {
+    if (this.startY && this.lastY) {
+      const diffY = this.lastY - this.startY
+      // 如果向下滑动超过80rpx，则关闭弹窗
+      if (diffY > 80) {
+        this.setData({ showLoginModal: false })
+      }
+    }
+    this.startY = null
+    this.lastY = null
+  },
+
+  // 阻止冒泡
+  stopPropagation() {
+    // 什么都不做，只是阻止事件冒泡
+  },
+
+  // 切换同意状态
+  onToggleAgree() {
+    this.setData({ hasAgreed: !this.data.hasAgreed })
+  },
+
+  // 跳转到用户协议
+  onGoAgreement() {
+    wx.navigateTo({ url: '/pages/agreement/agreement' })
+  },
+
+  // 跳转到隐私政策
+  onGoPrivacy() {
+    wx.navigateTo({ url: '/pages/privacy/privacy' })
+  },
+
+  // 未勾选时的提示
+  onLoginBtnTap() {
+    if (!this.data.hasAgreed) {
+      showError('请先阅读并同意用户协议和隐私政策')
+    }
+  },
+
+  // 用户协议和隐私政策（旧版，保留兼容）
   onPrivacy() {
     vibrate()
     wx.showModal({

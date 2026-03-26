@@ -5,7 +5,9 @@
     "pages/mine/mine",
     "pages/detail/detail",
     "pages/favorite/favorite",
-    "pages/about/about"
+    "pages/about/about",
+    "pages/agreement/agreement",
+    "pages/privacy/privacy"
   ],
   "usingComponents": {
     "t-button":    "tdesign-miniprogram/button/button",
