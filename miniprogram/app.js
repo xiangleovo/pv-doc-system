@@ -1,6 +1,6 @@
 App({
   // 小程序版本号
-  version: '1.3.2',
+  version: '1.3.3',
 
   globalData: {
     userInfo: null,

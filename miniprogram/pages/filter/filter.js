@@ -82,7 +82,9 @@ Page({
 
     const filtered = brands.filter(brand => {
       const categoryIds = brand.categoryIds || []
-      return categoryIds.includes(currentCategory.id)
+      const docCount = brand.categoryDocCounts?.[currentCategory.id] || 0
+      // 只显示有资料文件的品牌
+      return categoryIds.includes(currentCategory.id) && docCount > 0
     })
 
     const animatedBrands = filtered.map((brand, index) => ({

@@ -106,7 +106,7 @@ Page({
 
   // 预加载 PDF（静默下载，用户点击时直接打开）
   preloadPdf(docData) {
-    const { pdfUrl, id } = docData
+    let { pdfUrl, id } = docData
     if (!pdfUrl) return
 
     const cacheKey = `pdf_cache_${id}`
@@ -120,6 +120,29 @@ Page({
 
     // 检查是否正在预加载
     if (this.data.preloading) return
+
+    // 先清理旧缓存，确保不超过 5 个文件
+    this.clearOldCache(() => {
+      this.doPreloadPdf(pdfUrl, cacheKey)
+    })
+  },
+
+  // 执行预加载
+  doPreloadPdf(pdfUrl, cacheKey) {
+    // 强制转换为 HTTPS 并编码 URL（与正式下载保持一致）
+    pdfUrl = pdfUrl.replace(/^http:/i, 'https:')
+    try {
+      const urlObj = pdfUrl.match(/^(https?:\/\/[^/?#]+)([^?#]*)(\?[^#]*)?(#.*)?$/)
+      if (urlObj) {
+        const [, origin, pathname, search = '', hash = ''] = urlObj
+        const encodedPath = pathname.split('/').map(seg => {
+          try { return encodeURIComponent(decodeURIComponent(seg)) } catch { return encodeURIComponent(seg) }
+        }).join('/')
+        pdfUrl = origin + encodedPath + search + hash
+      }
+    } catch (e) {
+      // 编码失败使用原始 URL
+    }
 
     this.setData({ preloading: true })
 
@@ -149,6 +172,68 @@ Page({
       // 预加载进度不显示给用户，可以在这里打日志
       // console.log('预加载进度:', res.progress + '%')
     })
+  },
+
+  // 清理旧缓存，只保留最近 5 个 PDF 文件
+  clearOldCache(callback, isAutoCleanup = false) {
+    const fs = wx.getFileSystemManager()
+    const userDataPath = wx.env.USER_DATA_PATH
+    const MAX_CACHE_COUNT = 5
+    
+    try {
+      // 读取所有文件
+      const files = fs.readdirSync(userDataPath)
+      const pdfFiles = files.filter(f => f.startsWith('pv_') && f.endsWith('.pdf'))
+      
+      // 如果文件数量未超过限制，无需清理
+      if (pdfFiles.length <= MAX_CACHE_COUNT) {
+        if (callback) callback()
+        return
+      }
+      
+      // 获取文件信息并按时间排序（最旧的在前）
+      const fileInfos = pdfFiles.map(filename => {
+        try {
+          const stat = fs.statSync(`${userDataPath}/${filename}`)
+          return { name: filename, createTime: stat.createTime || 0 }
+        } catch (e) {
+          return { name: filename, createTime: 0 }
+        }
+      }).sort((a, b) => a.createTime - b.createTime)
+      
+      // 删除多余的文件，只保留最近的 5 个
+      const deleteCount = fileInfos.length - MAX_CACHE_COUNT
+      let deleted = 0
+      
+      fileInfos.slice(0, deleteCount).forEach(fileInfo => {
+        try {
+          fs.unlinkSync(`${userDataPath}/${fileInfo.name}`)
+          deleted++
+          // 同时清理对应的缓存记录
+          const keys = wx.getStorageInfoSync().keys
+          keys.forEach(key => {
+            if (key.startsWith('pdf_cache_')) {
+              const cachedPath = wx.getStorageSync(key)
+              if (cachedPath && cachedPath.includes(fileInfo.name)) {
+                wx.removeStorageSync(key)
+              }
+            }
+          })
+        } catch (e) {
+          console.error('删除文件失败:', fileInfo.name, e)
+        }
+      })
+      
+      console.log(`自动清理完成，删除了 ${deleted} 个旧文件，保留最近 ${MAX_CACHE_COUNT} 个`)
+      
+      // 清理完成后执行回调（无感，不显示 loading）
+      if (callback) {
+        callback()
+      }
+    } catch (e) {
+      console.error('清理缓存失败:', e)
+      showError('缓存清理失败，请手动清理')
+    }
   },
 
   // 查询当前资料的收藏状态
@@ -313,13 +398,23 @@ Page({
 
         if (err.errMsg) {
           if (err.errMsg.includes('timeout')) {
-            showError('下载超时，请检查网络后重试')
+            showError('下载超时，文件较大或网络较慢，请重试')
           } else if (err.errMsg.includes('domain')) {
             showError('下载失败：该域名未加入小程序合法域名')
           } else if (err.errMsg.includes('fail cancel')) {
             // 用户取消，不提示
+          } else if (err.errMsg.includes('maximum size') || err.errMsg.includes('storage limit')) {
+            // 小程序文件存储配额超限，尝试清理后重试
+            console.log('存储配额超限，尝试清理缓存')
+            this.clearOldCache(() => {
+              // 清理完成后重试下载
+              this.downloadAndOpenPdf(pdfUrl, cacheKey)
+            })
+            return
           } else {
-            showError('下载失败，请检查网络连接')
+            // 记录具体错误以便排查
+            console.error('下载失败详情:', err.errMsg, err)
+            showError('下载失败，请检查网络后重试')
           }
         } else {
           showError('下载失败，请重试')
@@ -332,9 +427,9 @@ Page({
       const progress = res.progress
       this.setData({ downloadProgress: progress })
       
-      // 更新 loading 提示
+      // 更新 loading 提示（保持文字长度一致，避免字体大小变化）
       if (progress < 100) {
-        wx.showLoading({ title: `正在打开...${progress}%`, mask: true })
+        wx.showLoading({ title: `正在打开文档 ${progress}%`, mask: true })
       }
     })
   },

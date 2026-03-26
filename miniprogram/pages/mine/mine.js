@@ -1,6 +1,15 @@
 const { request } = require('../../utils/request')
 const { getAppSafe, resolveAvatar, vibrate, showLoading, hideLoading, showSuccess, showError } = require('../../utils/common')
 
+// 格式化文件大小
+function formatSize(bytes) {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
 Page({
   data: {
     userInfo: null,
@@ -14,7 +23,8 @@ Page({
     tempAvatar: '',
     tempNickname: '',
     tempPhone: '',
-    appVersion: ''
+    appVersion: '',
+    cacheSize: '0 KB'
   },
 
   onShow() {
@@ -38,6 +48,68 @@ Page({
         this.loadStats()
       }
     })
+
+    // 计算缓存大小
+    this.calcCacheSize()
+  },
+
+  // 计算 PDF 缓存大小
+  calcCacheSize() {
+    const fs = wx.getFileSystemManager()
+    const userDataPath = wx.env.USER_DATA_PATH
+    
+    try {
+      const files = fs.readdirSync(userDataPath)
+      const pdfFiles = files.filter(f => f.startsWith('pv_') && f.endsWith('.pdf'))
+      
+      let totalSize = 0
+      pdfFiles.forEach(filename => {
+        try {
+          const stat = fs.statSync(`${userDataPath}/${filename}`)
+          totalSize += stat.size || 0
+        } catch (e) {}
+      })
+      
+      this.setData({ cacheSize: formatSize(totalSize) })
+    } catch (e) {
+      this.setData({ cacheSize: '0 KB' })
+    }
+  },
+
+  // 清理缓存
+  onClearCache() {
+    const fs = wx.getFileSystemManager()
+    const userDataPath = wx.env.USER_DATA_PATH
+    
+    showLoading('清理中...')
+    
+    try {
+      const files = fs.readdirSync(userDataPath)
+      const pdfFiles = files.filter(f => f.startsWith('pv_') && f.endsWith('.pdf'))
+      
+      let deleted = 0
+      pdfFiles.forEach(filename => {
+        try {
+          fs.unlinkSync(`${userDataPath}/${filename}`)
+          deleted++
+        } catch (e) {}
+      })
+      
+      // 清理缓存记录
+      const keys = wx.getStorageInfoSync().keys
+      keys.forEach(key => {
+        if (key.startsWith('pdf_cache_')) {
+          wx.removeStorageSync(key)
+        }
+      })
+      
+      hideLoading()
+      showSuccess(`已清理 ${deleted} 个文件`)
+      this.calcCacheSize()
+    } catch (e) {
+      hideLoading()
+      showError('清理失败')
+    }
   },
 
   // 空操作（用于未登录时头像点击的占位绑定）

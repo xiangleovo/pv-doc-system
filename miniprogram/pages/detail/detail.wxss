@@ -360,6 +360,13 @@ page { background: var(--bg-page); }
 .pdf-btn-hover::before {
   opacity: 1;
 }
+
+/* 下载中状态 */
+.pdf-btn.downloading {
+  background: linear-gradient(135deg, #6aaee8 0%, #8cc4f0 100%);
+  opacity: 0.9;
+}
+
 .pdf-btn-text {
   font-size: 32rpx;
   font-weight: 700;
