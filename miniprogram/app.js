@@ -1,4 +1,7 @@
 App({
+  // 小程序版本号
+  version: '1.3.2',
+
   globalData: {
     userInfo: null,
     token: null,
