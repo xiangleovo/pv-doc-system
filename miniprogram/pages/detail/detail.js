@@ -7,8 +7,11 @@ Page({
     id: null,
     document: null,
     loading: true,
-    loadFailed: false,  // 标记是否加载失败
-    isFavorited: false
+    loadFailed: false,
+    isFavorited: false,
+    downloading: false,      // 下载中状态
+    downloadProgress: 0,    // 下载进度
+    cachedPdfPath: null     // 缓存的 PDF 路径
   },
 
   onLoad(options) {
@@ -36,6 +39,14 @@ Page({
     this.setData({ id })
     this.loadDocument(id)
     this.loadFavoriteStatus(id)
+  },
+
+  onUnload() {
+    // 页面卸载时清理缓存文件（可选）
+    const { cachedPdfPath } = this.data
+    if (cachedPdfPath) {
+      // 不删除，因为其他页面可能还在用
+    }
   },
 
   // 加载资料详情（带自动重试）
@@ -107,7 +118,7 @@ Page({
     }
   },
 
-  // 打开PDF
+  // 打开PDF（优化版：使用 downloadFile + 进度显示）
   openPDF() {
     const app = getAppSafe()
     if (!app.globalData.token) {
@@ -124,65 +135,151 @@ Page({
       return
     }
 
-    const { pdfUrl } = this.data.document
+    const { pdfUrl, id } = this.data.document
 
     if (!pdfUrl) {
       showError('暂无PDF文件')
       return
     }
 
-    // 强制转换为 HTTPS（微信小程序只允许 HTTPS 请求）
-    const safeUrl = pdfUrl.replace(/^http:/i, 'https:')
-
-    showLoading('文档加载中...')
-
-    // 用 request + ArrayBuffer 方式下载，绕过开发工具 downloadFile bug
-    wx.request({
-      url: safeUrl,
-      method: 'GET',
-      responseType: 'arraybuffer',
-      success(res) {
-        if (res.statusCode !== 200) {
-          hideLoading()
-          showError('文件下载失败（状态码 ' + res.statusCode + '）')
-          return
-        }
-
-        const fs = wx.getFileSystemManager()
-        // 用时间戳生成唯一文件名，避免缓存冲突
-        const savedPath = `${wx.env.USER_DATA_PATH}/pv_${Date.now()}.pdf`
-
-        fs.writeFile({
-          filePath: savedPath,
-          data: res.data,
-          encoding: 'binary',
-          success() {
-            hideLoading()
-            wx.openDocument({
-              filePath: savedPath,
-              fileType: 'pdf',
-              showMenu: true,
-              success() {},
-              fail() {
-                showError('打开失败，请重试')
-              }
-            })
+    // 检查是否已有缓存
+    const cacheKey = `pdf_cache_${id}`
+    const cachedPath = wx.getStorageSync(cacheKey)
+    
+    if (cachedPath) {
+      // 验证缓存文件是否存在
+      const fs = wx.getFileSystemManager()
+      try {
+        fs.accessSync(cachedPath)
+        // 缓存存在，直接打开
+        wx.openDocument({
+          filePath: cachedPath,
+          fileType: 'pdf',
+          showMenu: true,
+          success: () => {
+            // 静默成功，不提示
           },
-          fail() {
-            hideLoading()
-            showError('文件写入失败，请重试')
+          fail: (err) => {
+            // 缓存文件失效，重新下载
+            console.log('缓存文件失效，重新下载')
+            wx.removeStorageSync(cacheKey)
+            this.downloadAndOpenPdf(pdfUrl, cacheKey)
           }
         })
-      },
-      fail(err) {
-        hideLoading()
-        if (err.errMsg && err.errMsg.includes('domain')) {
-          showError('下载失败：该域名未加入小程序合法域名')
+        return
+      } catch (e) {
+        // 文件不存在，重新下载
+        wx.removeStorageSync(cacheKey)
+        this.downloadAndOpenPdf(pdfUrl, cacheKey)
+        return
+      }
+    }
+
+    // 没有缓存，下载并打开
+    this.downloadAndOpenPdf(pdfUrl, cacheKey)
+  },
+
+  // 下载并打开 PDF
+  downloadAndOpenPdf(pdfUrl, cacheKey) {
+    const { downloading } = this.data
+    if (downloading) {
+      showError('正在下载中，请稍候')
+      return
+    }
+
+    // 强制转换为 HTTPS
+    const safeUrl = pdfUrl.replace(/^http:/i, 'https:')
+
+    // 显示下载提示
+    wx.showLoading({ title: '正在下载文档...', mask: true })
+    this.setData({ downloading: true, downloadProgress: 0 })
+
+    // 使用 downloadFile API（微信官方推荐的文件下载方式）
+    const downloadTask = wx.downloadFile({
+      url: safeUrl,
+      filePath: `${wx.env.USER_DATA_PATH}/pv_${Date.now()}.pdf`,
+      timeout: 60000, // 60秒超时
+      success: (res) => {
+        wx.hideLoading()
+        this.setData({ downloading: false, downloadProgress: 0 })
+
+        if (res.statusCode === 200) {
+          // 如果指定了 filePath，使用 filePath；否则使用 tempFilePath
+          const filePath = res.filePath || res.tempFilePath
+          
+          if (!filePath) {
+            showError('下载失败：无法获取文件路径')
+            return
+          }
+          
+          // 缓存文件路径
+          wx.setStorageSync(cacheKey, filePath)
+
+          // 打开文档
+          wx.openDocument({
+            filePath: filePath,
+            fileType: 'pdf',
+            showMenu: true,
+            success: () => {
+              // 静默成功
+            },
+            fail: (err) => {
+              console.error('打开文档失败:', err)
+              // 清理缓存
+              wx.removeStorageSync(cacheKey)
+              if (err.errMsg && err.errMsg.includes('file not found')) {
+                showError('文件已过期，请重新下载')
+              } else {
+                showError('打开失败，请重试')
+              }
+            }
+          })
         } else {
-          showError('下载失败，请检查网络连接')
+          showError('下载失败（状态码 ' + res.statusCode + '）')
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading()
+        this.setData({ downloading: false, downloadProgress: 0 })
+
+        console.error('下载失败:', err)
+
+        if (err.errMsg) {
+          if (err.errMsg.includes('timeout')) {
+            showError('下载超时，请检查网络后重试')
+          } else if (err.errMsg.includes('domain')) {
+            showError('下载失败：该域名未加入小程序合法域名')
+          } else if (err.errMsg.includes('fail cancel')) {
+            // 用户取消，不提示
+          } else {
+            showError('下载失败，请检查网络连接')
+          }
+        } else {
+          showError('下载失败，请重试')
         }
       }
     })
+
+    // 监听下载进度
+    downloadTask.onProgressUpdate((res) => {
+      const progress = res.progress
+      this.setData({ downloadProgress: progress })
+      
+      // 更新 loading 提示
+      if (progress < 100) {
+        wx.showLoading({ title: `正在下载...${progress}%`, mask: true })
+      }
+    })
+  },
+
+  // 取消下载
+  cancelDownload() {
+    const { downloading } = this.data
+    if (downloading) {
+      this.setData({ downloading: false })
+      wx.hideLoading()
+      showError('已取消下载')
+    }
   },
 
   // 收藏/取消收藏
