@@ -510,6 +510,24 @@ const handlePdfUpload = async (e) => {
   } catch (e) {
     uploadedFileName.value = ''
     console.error('上传失败:', e)
+    
+    // 处理重复文件错误
+    if (e.response?.data?.code === 'FILE_EXISTS' || e.response?.data?.code === 'FILE_EXISTS_IN_DB') {
+      const existingDoc = e.response?.data?.data?.existingDocument
+      let message = e.response?.data?.message || '文件已存在，请勿重复上传'
+      
+      if (existingDoc) {
+        message += `<br/><br/>已存在的资料：<a href="#/documents" style="color: #409eff; text-decoration: underline;">${existingDoc.title}</a>`
+      }
+      
+      ElMessageBox.alert(message, '重复文件', {
+        confirmButtonText: '知道了',
+        dangerouslyUseHTMLString: true,
+        type: 'warning'
+      })
+    } else {
+      ElMessage.error(e.response?.data?.message || '上传失败，请重试')
+    }
   } finally {
     uploading.value = false
     if (pdfFileInput.value) pdfFileInput.value.value = ''

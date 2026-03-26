@@ -200,6 +200,67 @@ router.post('/cos/upload-pdf', authMiddleware, adminAuthMiddleware, pdfUpload.si
     const safeFileName = sanitizeName(originalBaseName) + ext;
     const cosKey = `${prefix}${categoryName}/${brandName}/${safeFileName}`;
 
+    // ========== 检查文件是否已存在 ==========
+    // 1. 检查 COS 上是否已有相同文件
+    try {
+      await new Promise((resolve, reject) => {
+        cos.headObject({
+          Bucket: bucket,
+          Region: region,
+          Key: cosKey
+        }, (err, data) => {
+          if (err && err.statusCode === 404) {
+            resolve(null); // 文件不存在，可以继续上传
+          } else if (err) {
+            reject(err);
+          } else {
+            reject(new Error('FILE_EXISTS')); // 文件已存在
+          }
+        });
+      });
+    } catch (err) {
+      if (err.message === 'FILE_EXISTS') {
+        // 删除临时文件
+        if (tmpFile && fs.existsSync(tmpFile)) {
+          fs.unlinkSync(tmpFile);
+        }
+        return res.status(409).json({
+          success: false,
+          message: `文件 "${safeFileName}" 已存在，请勿重复上传`,
+          code: 'FILE_EXISTS'
+        });
+      }
+      // 其他错误继续执行，不阻断上传
+    }
+
+    // 2. 检查数据库中是否已有相同文件名的文档
+    const { Document } = require('../models');
+    const existingDoc = await Document.findOne({
+      where: {
+        pdfUrl: {
+          [require('sequelize').Op.like]: `%/${safeFileName}`
+        }
+      }
+    });
+
+    if (existingDoc) {
+      // 删除临时文件
+      if (tmpFile && fs.existsSync(tmpFile)) {
+        fs.unlinkSync(tmpFile);
+      }
+      return res.status(409).json({
+        success: false,
+        message: `文件 "${safeFileName}" 已存在于资料 "${existingDoc.title}" 中，请勿重复上传`,
+        code: 'FILE_EXISTS_IN_DB',
+        data: {
+          existingDocument: {
+            id: existingDoc.id,
+            title: existingDoc.title
+          }
+        }
+      });
+    }
+
     // 上传到 COS
     await new Promise((resolve, reject) => {
       cos.uploadFile({
@@ -217,13 +278,14 @@ router.post('/cos/upload-pdf', authMiddleware, adminAuthMiddleware, pdfUpload.si
       });
     });
 
-    // 生成访问 URL
+    // 生成访问 URL（对路径中的中文/特殊字符做 URL 编码，保留 / 分隔符）
+    const encodedKey = cosKey.split('/').map(seg => encodeURIComponent(seg)).join('/');
     let fileUrl;
     if (customDomain) {
       const domain = customDomain.replace(/\/$/, '');
-      fileUrl = `${domain}/${cosKey}`;
+      fileUrl = `${domain}/${encodedKey}`;
     } else {
-      fileUrl = `https://${bucket}.cos.${region}.myqcloud.com/${cosKey}`;
+      fileUrl = `https://${bucket}.cos.${region}.myqcloud.com/${encodedKey}`;
     }
 
     // 删除临时文件

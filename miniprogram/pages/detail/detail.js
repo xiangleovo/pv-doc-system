@@ -11,7 +11,8 @@ Page({
     isFavorited: false,
     downloading: false,      // 下载中状态
     downloadProgress: 0,    // 下载进度
-    cachedPdfPath: null     // 缓存的 PDF 路径
+    cachedPdfPath: null,    // 缓存的 PDF 路径
+    preloading: false       // 是否正在预加载
   },
 
   onLoad(options) {
@@ -86,6 +87,9 @@ Page({
           needAuth: true
         }).catch(() => {})
       }
+
+      // 预加载 PDF（静默下载，提升首次打开速度）
+      this.preloadPdf(docData)
     } catch (error) {
       // 最多重试 2 次，重试期间保持 loading: true
       if (retryCount < 2) {
@@ -98,6 +102,53 @@ Page({
       this.setData({ loading: false, loadFailed: true })
       showError('加载失败，请返回重试')
     }
+  },
+
+  // 预加载 PDF（静默下载，用户点击时直接打开）
+  preloadPdf(docData) {
+    const { pdfUrl, id } = docData
+    if (!pdfUrl) return
+
+    const cacheKey = `pdf_cache_${id}`
+    const cachedPath = wx.getStorageSync(cacheKey)
+    
+    // 已有缓存，不重复下载
+    if (cachedPath) {
+      this.setData({ cachedPdfPath: cachedPath })
+      return
+    }
+
+    // 检查是否正在预加载
+    if (this.data.preloading) return
+
+    this.setData({ preloading: true })
+
+    // 静默下载，不显示 loading
+    const downloadTask = wx.downloadFile({
+      url: pdfUrl,
+      filePath: `${wx.env.USER_DATA_PATH}/pv_${Date.now()}.pdf`,
+      timeout: 120000, // 2分钟超时
+      success: (res) => {
+        if (res.statusCode === 200) {
+          const filePath = res.filePath || res.tempFilePath
+          wx.setStorageSync(cacheKey, filePath)
+          this.setData({ 
+            cachedPdfPath: filePath,
+            preloading: false 
+          })
+        }
+      },
+      fail: () => {
+        // 预加载失败静默处理，不影响用户体验
+        this.setData({ preloading: false })
+      }
+    })
+
+    // 监听进度（可选，用于调试）
+    downloadTask.onProgressUpdate((res) => {
+      // 预加载进度不显示给用户，可以在这里打日志
+      // console.log('预加载进度:', res.progress + '%')
+    })
   },
 
   // 查询当前资料的收藏状态
@@ -142,9 +193,9 @@ Page({
       return
     }
 
-    // 检查是否已有缓存
+    // 检查是否已有缓存（优先使用预加载的缓存）
     const cacheKey = `pdf_cache_${id}`
-    const cachedPath = wx.getStorageSync(cacheKey)
+    const cachedPath = this.data.cachedPdfPath || wx.getStorageSync(cacheKey)
     
     if (cachedPath) {
       // 验证缓存文件是否存在
@@ -188,10 +239,26 @@ Page({
     }
 
     // 强制转换为 HTTPS
-    const safeUrl = pdfUrl.replace(/^http:/i, 'https:')
+    let safeUrl = pdfUrl.replace(/^http:/i, 'https:')
+
+    // 对 URL 路径中的中文/特殊字符做编码（兼容旧数据中未编码的 URL）
+    try {
+      // 只对 path 部分编码，保留 scheme://host 和 query/hash
+      const urlObj = safeUrl.match(/^(https?:\/\/[^/?#]+)([^?#]*)(\?[^#]*)?(#.*)?$/)
+      if (urlObj) {
+        const [, origin, pathname, search = '', hash = ''] = urlObj
+        // 对路径每一段单独编码，已编码的不重复编码
+        const encodedPath = pathname.split('/').map(seg => {
+          try { return encodeURIComponent(decodeURIComponent(seg)) } catch { return encodeURIComponent(seg) }
+        }).join('/')
+        safeUrl = origin + encodedPath + search + hash
+      }
+    } catch (e) {
+      // 编码失败则使用原始 URL
+    }
 
     // 显示下载提示
-    wx.showLoading({ title: '正在下载文档...', mask: true })
+    wx.showLoading({ title: '正在打开文档...', mask: true })
     this.setData({ downloading: true, downloadProgress: 0 })
 
     // 使用 downloadFile API（微信官方推荐的文件下载方式）
@@ -267,7 +334,7 @@ Page({
       
       // 更新 loading 提示
       if (progress < 100) {
-        wx.showLoading({ title: `正在下载...${progress}%`, mask: true })
+        wx.showLoading({ title: `正在打开...${progress}%`, mask: true })
       }
     })
   },
